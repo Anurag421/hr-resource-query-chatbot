@@ -1,0 +1,124 @@
+{
+  "employees": [
+    {
+      "id": 1,
+      "name": "Alice Johnson",
+      "skills": ["Python", "React", "AWS"],
+      "experience_years": 5,
+      "projects": ["E-commerce Platform", "Healthcare Dashboard"],
+      "availability": "available"
+    },
+    {
+      "id": 2,
+      "name": "Michael Rodriguez",
+      "skills": ["Java", "Spring Boot", "Docker"],
+      "experience_years": 4,
+      "projects": ["Banking App", "Risk Prediction Engine"],
+      "availability": "unavailable"
+    },
+    {
+      "id": 3,
+      "name": "Dr. Sarah Chen",
+      "skills": ["TensorFlow", "PyTorch", "Medical Imaging"],
+      "experience_years": 6,
+      "projects": ["X-ray Analysis", "Medical Diagnosis Platform"],
+      "availability": "available"
+    },
+    {
+      "id": 4,
+      "name": "Ravi Kumar",
+      "skills": ["Node.js", "MongoDB", "React Native"],
+      "experience_years": 3,
+      "projects": ["Logistics Tracker", "Grocery Delivery App"],
+      "availability": "available"
+    },
+    {
+      "id": 5,
+      "name": "Priya Desai",
+      "skills": ["Python", "Machine Learning", "scikit-learn"],
+      "experience_years": 2,
+      "projects": ["Student Dropout Prediction", "Retail Analytics"],
+      "availability": "available"
+    },
+    {
+      "id": 6,
+      "name": "Amit Patel",
+      "skills": ["Angular", "TypeScript", "Firebase"],
+      "experience_years": 5,
+      "projects": ["E-learning Platform", "Online Banking UI"],
+      "availability": "unavailable"
+    },
+    {
+      "id": 7,
+      "name": "Jessica Lee",
+      "skills": ["Kotlin", "Android", "REST APIs"],
+      "experience_years": 4,
+      "projects": ["Health Tracker App", "Food Delivery App"],
+      "availability": "available"
+    },
+    {
+      "id": 8,
+      "name": "Vikram Singh",
+      "skills": ["Python", "Docker", "AWS", "Kubernetes"],
+      "experience_years": 6,
+      "projects": ["DevOps Automation", "Serverless Healthcare"],
+      "availability": "available"
+    },
+    {
+      "id": 9,
+      "name": "Emily Turner",
+      "skills": ["React", "Redux", "UI/UX"],
+      "experience_years": 3,
+      "projects": ["SaaS Dashboard", "Inventory UI Redesign"],
+      "availability": "unavailable"
+    },
+    {
+      "id": 10,
+      "name": "Nikhil Sharma",
+      "skills": ["Go", "Microservices", "PostgreSQL"],
+      "experience_years": 5,
+      "projects": ["Billing Engine", "Fraud Detection Service"],
+      "availability": "available"
+    },
+    {
+      "id": 11,
+      "name": "Linda Scott",
+      "skills": ["Excel", "SQL", "Power BI"],
+      "experience_years": 3,
+      "projects": ["HR Analytics", "Employee Retention Report"],
+      "availability": "available"
+    },
+    {
+      "id": 12,
+      "name": "Rajeev Mehta",
+      "skills": ["Python", "Flask", "NLP"],
+      "experience_years": 4,
+      "projects": ["Chatbot", "Resume Parser"],
+      "availability": "available"
+    },
+    {
+      "id": 13,
+      "name": "Fatima Khan",
+      "skills": ["React Native", "Firebase", "Push Notifications"],
+      "experience_years": 3,
+      "projects": ["Meditation App", "Productivity Tracker"],
+      "availability": "available"
+    },
+    {
+      "id": 14,
+      "name": "Daniel Roberts",
+      "skills": ["C#", ".NET", "Azure"],
+      "experience_years": 6,
+      "projects": ["Healthcare Claims Portal", "Hospital Management System"],
+      "availability": "unavailable"
+    },
+    {
+      "id": 15,
+      "name": "Sneha Reddy",
+      "skills": ["JavaScript", "Vue.js", "Node.js"],
+      "experience_years": 2,
+      "projects": ["School Management Portal", "Feedback System"],
+      "availability": "available"
+    }
+  ]
+}
