@@ -154,4 +154,5 @@ No FAISS due to time constraints and small dataset
 
 ## Demo
 Local API Docs: [http://localhost:8000/docs](http://127.0.0.1:8000/docs)
+
 Streamlit UI: [http://localhost:8501](http://localhost:8502/)
