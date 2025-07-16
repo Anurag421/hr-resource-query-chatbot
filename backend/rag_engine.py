@@ -1,64 +1,90 @@
-import os
 import json
-import faiss
 import openai
-import numpy as np
+import os
 from dotenv import load_dotenv
+from typing import List, Tuple
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Load OpenAI API key
+# Load OpenAI API key from .env
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# Paths
-EMPLOYEE_DATA_PATH = "backend/data/employees.json"
-VECTOR_STORE_PATH = "backend/vector_stores/index.faiss"
+# Path to employee JSON
+DATA_PATH = "backend/data/employees.json"
 
-# ----------- Helper Functions -----------
+# Load employee profiles
+def load_employees() -> List[dict]:
+    try:
+        with open(DATA_PATH, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict) or "employees" not in data:
+            raise ValueError("Invalid format: JSON must contain 'employees' key.")
+        employees = data["employees"]
+        if not isinstance(employees, list) or not all(isinstance(emp, dict) for emp in employees):
+            raise ValueError("Invalid format: 'employees' must be a list of dictionaries.")
+        return employees
+    except Exception as e:
+        print(f"⚠️ Error loading employees: {e}")
+        return []
 
-def load_employees():
-    with open(EMPLOYEE_DATA_PATH, "r") as f:
-        data = json.load(f)
-    return data["employees"]
+# Build a TF-IDF vector index from employee data
+def build_vector_index(employees: List[dict]) -> Tuple:
+    try:
+        docs = [
+            f"{emp['name']} {' '.join(emp['skills'])} {' '.join(emp['projects'])} {emp['experience_years']} years experience"
+            for emp in employees
+        ]
+        vectorizer = TfidfVectorizer().fit_transform(docs)
+        return vectorizer, docs
+    except Exception as e:
+        print(f"⚠️ Error building vector index: {e}")
+        return None, []
 
-def format_employee(employee):
-    return f"{employee['name']} is a {employee['experience_years']} years experienced developer skilled in {', '.join(employee['skills'])}. Past projects: {', '.join(employee['projects'])}. Availability: {employee['availability']}."
+# Search function using cosine similarity and GPT response generation
+def search_employees(query: str, employees: List[dict]) -> Tuple[List[dict], str]:
+    index, docs = build_vector_index(employees)
+    if index is None or not docs:
+        return [], "⚠️ Unable to process search due to internal error."
 
-def embed_text(text):
-    response = openai.Embedding.create(
-        input=text,
-        model="text-embedding-3-small"
-    )
-    return np.array(response['data'][0]['embedding'], dtype=np.float32)
+    try:
+        query_vec = TfidfVectorizer().fit(docs).transform([query])
+        scores = cosine_similarity(query_vec, index).flatten()
 
-# ----------- Indexing -----------
+        # Get top 2 matches
+        top_indices = scores.argsort()[::-1][:2]
+        matched = [employees[i] for i in top_indices]
 
-def build_vector_index(employees):
-    documents = [format_employee(emp) for emp in employees]
-    embeddings = [embed_text(doc) for doc in documents]
+        # Format profiles for GPT prompt
+        formatted_profiles = "\n\n".join(
+            f"Name: {emp['name']}\n"
+            f"Experience: {emp['experience_years']} years\n"
+            f"Skills: {', '.join(emp['skills'])}\n"
+            f"Projects: {', '.join(emp['projects'])}\n"
+            f"Availability: {emp['availability']}"
+            for emp in matched
+        )
 
-    dimension = len(embeddings[0])
-    index = faiss.IndexFlatL2(dimension)
-    index.add(np.array(embeddings))
+        prompt = (
+            f"You are an HR assistant. A manager asked:\n"
+            f"'{query}'\n\n"
+            f"Based on the employee profiles below, suggest top matches in a helpful tone.\n\n"
+            f"{formatted_profiles}\n\n"
+            f"Your response:"
+        )
 
-    faiss.write_index(index, VECTOR_STORE_PATH)
-    return index, documents
+        try:
+            gpt_response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=300
+            )
+            reply = gpt_response["choices"][0]["message"]["content"]
+        except Exception as e:
+            reply = f"⚠️ GPT error: {str(e)}"
 
-def load_vector_index(employees):
-    if os.path.exists(VECTOR_STORE_PATH):
-        index = faiss.read_index(VECTOR_STORE_PATH)
-        documents = [format_employee(emp) for emp in employees]
-    else:
-        index, documents = build_vector_index(employees)
-    return index, documents
+        return matched, reply
 
-# ----------- Search Interface -----------
-
-def search_employees(query, employees, top_k=3):
-    query_embedding = embed_text(query)
-    index, documents = load_vector_index(employees)
-
-    distances, indices = index.search(np.array([query_embedding]), top_k)
-    results = [documents[i] for i in indices[0]]
-
-    matched_employees = [employees[i] for i in indices[0]]
-    return matched_employees, results
+    except Exception as e:
+        return [], f"⚠️ Search failure: {str(e)}"
